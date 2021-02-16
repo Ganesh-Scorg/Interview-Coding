@@ -16,6 +16,10 @@ public class MagicSquareTester
 		
 	}
 	
+	/**
+	 * Test conversion of 3*3 Matrix into magic square and assert the result.
+	 * Also assert replacement cost of conversion
+	 */
 	@Test
 	public void test3by3MagicSquare()
 	{
@@ -36,9 +40,15 @@ public class MagicSquareTester
 		System.out.println(
 			"Square Matrix converted to Magic Square at the cost of " + s.getReplacementcost());
 		
+		int threeby3expectedmagicsqaure[][] = {{8, 3, 4}, {1, 5, 9}, {6, 7, 2}};
 		assertEquals(7, s.getReplacementcost());
+		assertEquals(threeby3expectedmagicsqaure, s.getMatrixsquare());
 	}
 	
+	/**
+	 * Test conversion of 3*3 Matrix (wrong middle case)into magic square and assert the result.
+	 * Also assert replacement cost of conversion
+	 */
 	@Test
 	public void test3by3MagicSquare2()
 	{
@@ -60,9 +70,15 @@ public class MagicSquareTester
 		System.out.println(
 			"Square Matrix converted to Magic Square at the cost of " + s.getReplacementcost());
 		
+		int threeby3expectedmagicsqaure[][] = {{8, 3, 4}, {1, 5, 9}, {6, 7, 2}};
 		assertEquals(11, s.getReplacementcost());
+		assertEquals(threeby3expectedmagicsqaure, s.getMatrixsquare());
 	}
 	
+	/**
+	 * Test conversion of 4*4 Matrix into magic square and assert the result.
+	 * Also assert replacement cost of conversion
+	 */
 	@Test
 	public void test4by4MagicSquare()
 	{
@@ -85,9 +101,16 @@ public class MagicSquareTester
 		System.out.println(
 			"Square Matrix converted to Magic Square at the cost of " + s.getReplacementcost());
 		
+		int fourby4expectedmagicsquare[][] = {{16, 2, 3, 13}, {5, 11, 10, 8}, {9, 7, 6, 12}, {4, 14, 15, 1}};
+		
 		assertEquals(3, s.getReplacementcost());
+		assertEquals(fourby4expectedmagicsquare, s.getMatrixsquare());
 	}
 	
+	/**
+	 * Test conversion of 5*5 Matrix into magic square and assert the result.
+	 * Also assert replacement cost of conversion
+	 */
 	@Test
 	public void test5by5MagicSquare()
 	{
@@ -111,6 +134,10 @@ public class MagicSquareTester
 		System.out.println(
 			"Square Matrix converted to Magic Square at the cost of " + s.getReplacementcost());
 		
+		int fiveby5expectedMagicSqaure[][] = {{9, 3, 22, 16, 15}, {2, 21, 20, 14, 8}, {25, 19, 13, 7, 1},
+			{18, 12, 6, 5, 24}, {11, 10, 4, 23, 17}};
+		
 		assertEquals(7, s.getReplacementcost());
+		assertEquals(fiveby5expectedMagicSqaure, s.getMatrixsquare());
 	}
 }
