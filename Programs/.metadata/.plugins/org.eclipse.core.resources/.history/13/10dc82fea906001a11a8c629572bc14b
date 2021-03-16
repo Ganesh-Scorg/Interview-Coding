@@ -1,0 +1,34 @@
+package com.adyen;
+
+import java.io.Serializable;
+
+public class serilzation implements Serializable  {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	int a;
+	person p;
+	public serilzation(int a, person p) {
+		super();
+		this.a = a;
+		this.p = p;
+	}
+	
+	
+	
+	
+
+}
+
+
+class person{
+	public person(int id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+	int id;
+	String name;
+}

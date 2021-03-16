@@ -1,0 +1,168 @@
+#
+# Standard IssuerDebitAdd->MerchandisePurchase method call
+#
+
+[add profile directory "../../profiles/consumer"]
+[add profile directory "../../profiles"]
+
+[execute action "Postilion.EnsureSaFQClear"]
+
+[send "0200" from ISOSource as srcRequest
+	import Iso8583post::IsoSrcRequest
+	[
+	"3"			: "003000"
+	"14"  		: "4912"
+	"18"  		: "1111"
+	"27"  		: "8"
+	"28"  		: "C00000000"
+	"32"  		: "12345678901"
+	"33"  		: "45678912345"
+	"43"  		: "111111111111111   Ave  New York     NYUS"
+	"45"  		: "B1111000000011779=840Test Case=0712101"
+	"100"		:	"10293847561"
+	"127.12"		:	"Postilion"
+	"127.13"		:	"36   123459876840"
+	"127.15"  	: "33441    8001 Mosaic House   "
+	"127.58"		: \random("an", "8")\ + "-" + \random("an", "4")\ + "-" + \random("an", "4")\ + "-" + \random("an", "4")\ + "-" + \random("an", "12")\
+	"127.27" 	: 	"M" # CVV2 Valid
+	]
+]
+[receive "RQ" at IssuerDebitAddRqServer as MerchandisePurchase_Request
+	import IssuerDebitAddRq_MerchandisePurchase::MerchandisePurchase_Request
+	[
+		"uid" : \ensurePresent()\
+		"parameter[request].value.requestUID" : \ensurePresent()\
+		"parameter[request].value.baseServiceRqVersion" : \ignore()\
+		"parameter[request].value.baseServiceRequestVersion" : \ignore()\
+		"parameter[request].value.header.additionalAttributes[]" : "(0)"
+		"parameter[request].value.header.messageHeaderVersion" : \ignore()\
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.aCIClientTerminalSeqNum" : \compareTo("srcRequest", "37")\
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.clientDt" : \ensureEndsWith(\copyFrom("srcRequest", "13")\ + \copyFrom("srcRequest", "12")\)\
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.aCITerminalIdent" : \compareTo("srcRequest", "41")\
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.originatorType" : \compareTo("srcRequest","18")\
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.cardAcceptorData.aCIPostAddr.addr1" : \strip(\substring(\copyFrom("srcRequest", "43")\, "0", "23")\, "RIGHT")\
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.cardAcceptorData.aCIPostAddr.city" : \strip(\substring(\copyFrom("srcRequest", "43")\, "23", "13")\, "RIGHT")\
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.cardAcceptorData.aCIPostAddr.countryCode" : "840"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.cardAcceptorData.aCIPostAddr.postCode" : \strip(\substring(\copyFrom("srcRequest", "127.13")\, "5", "9")\, "RIGHT")\
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.cardAcceptorData.aCIPostAddr.state" : \strip(\substring(\copyFrom("srcRequest", "43")\, "36", "2")\, "RIGHT")\
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.cardAcceptorData.aCIPostAddr.aCIPostAddrVersion" : "1"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.cardAcceptorData.owner"	:	\compareTo("srcRequest", "127.12")\
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.cardAcceptorData.region"	:	"NY "
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.cardAcceptorData.cardAcceptorDataVersion" : "2"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.networkTrnData.aCINetworkTrnDataVersion" : "2"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.contextRqHdrEndPointVersion" : "1"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.identCardPresent" : "true"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.identConditions" : "12"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.identReadMethod" : "6"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.identVerifyEntity"	:	"1" 
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.identVerifyMethod" : "1"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSCapabilities.cardholderAuthenticationEntity"	:	"1"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSCapabilities.pOSAdditionalData.pOSAdditionalDataVersion"	:	"3"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSCapabilities.pOSCaptureCapability"	:	"false" # cannot capture
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSCapabilities.pOSEntryCapabilityCode"	:	"0"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSCapabilities.pOSPINCaptureCapability"	:	"E_0"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSCapabilities.pOSTerminalDisplayPrintCapability"	:	"0"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSCapabilities.pOSVerifyCapability" : "1"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSCapabilities.terminalType"	:	"00"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSCapabilities.terminalOperator"	: "0"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSCapabilities.aCIPOSCapabilitiesVersion" : "3"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.pOSLocation"	:	"0"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.pointOfServiceData.aCIPointOfServiceDataVersion" : "1"
+		"parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.issuerACIContextRqHdrVersion" : "1"
+		"parameter[request].value.issuerDebitAddRqInfo.acqInfo.acquirerInfoEndPoint.apprvCodeLength" : \compareTo("srcRequest","27")\
+		"parameter[request].value.issuerDebitAddRqInfo.acqInfo.acquirerInfoEndPoint.endPoint.acquirerInstitutionIdentCode" : \compareTo("srcRequest","32")\
+		"parameter[request].value.issuerDebitAddRqInfo.acqInfo.acquirerInfoEndPoint.endPoint.forwardingInstitutionIdentCode"	:	\compareTo("srcRequest", "33")\
+		"parameter[request].value.issuerDebitAddRqInfo.acqInfo.acquirerInfoEndPoint.endPoint.reconciliationDate" : \ensurePresent\ # cannot test this explicitly as it comes from TM and not the source
+		"parameter[request].value.issuerDebitAddRqInfo.acqInfo.acquirerInfoEndPoint.merchantIdent"	:	\compareTo("srcRequest", "42")\
+		"parameter[request].value.issuerDebitAddRqInfo.additionalTransactionInfo.extrnMsgIdent"	:	"0200"
+		"parameter[request].value.issuerDebitAddRqInfo.additionalTransactionInfo.origNetworkProcessingCode"	:	\compareTo("srcRequest", "3")\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.compositeCurAmt[]" : "(1)"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.compositeCurAmt[0].aCICompositeCurAmtVersion" : \ignore()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.compositeCurAmt[0].curAmtType" : "1"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.compositeCurAmt[0].curAmt.amt" : "1000"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.compositeCurAmt[0].curAmt.curCode.currencyCodeType" : "0"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.compositeCurAmt[0].curAmt.curCode.currencyCodeValue" : \compareTo("srcRequest", "49")\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.compositeCurAmt[0].curAmt.aCICurrencyAmountVersion" : \ignore()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.compositeCurAmt[0].aCICompositeCurAmtVersion" : \ignore()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.endPointPOSEntryMode" : \compareTo("srcRequest", "22")\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.addrVerification.addr1"	:	\strip(\substring(\copyFrom("srcRequest", "127.15")\, "9", "20")\, "RIGHT")\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.addrVerification.postalCode"	:	\strip(\substring(\copyFrom("srcRequest", "127.15")\, "0", "9")\, "RIGHT")\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.addrVerification.addrVerificationVersion" : "2"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[]" : "(2)"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[0].feeType" : "0"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[0].amount.amt" : "0"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[0].amount.curCode.currencyCodeType" : "0"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[0].amount.curCode.currencyCodeValue" : \compareTo("srcRequest", "49")\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[0].amount.aCICurrencyAmountVersion" : \ignore()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[0].exchangeRate" : "60000000"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[0].reconciliationAmount.amt" : \ensureAbsent()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[0].reconciliationAmount.curCode" : \ensureAbsent()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[0].reconciliationAmount.aCICurrencyAmountVersion" : "1"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[0].transactionFeeVersion" : "1"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[1].feeType" : "1"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[1].amount.amt" : "0"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[1].amount.curCode.currencyCodeType" : "0"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[1].amount.curCode.currencyCodeValue" : \compareTo("srcRequest", "49")\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[1].amount.aCICurrencyAmountVersion" : \ignore()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[1].exchangeRate" : "60000000"
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[1].reconciliationAmount.amt" : \ensureAbsent()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[1].reconciliationAmount.curCode" : \ensureAbsent()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[1].reconciliationAmount.aCICurrencyAmountVersion" : \ignore()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.transactionFee[1].transactionFeeVersion" : \ignore()\
+		"parameter[request].value.issuerDebitAddRqInfo.debitInfo.debitInfoOptional.pOSConditionCode" : \compareTo("srcRequest", "25")\
+		"parameter[request].value.issuerDebitAddRqInfo.issuerInfo.issuerSystemTraceAuditNumber" : \compareTo("srcRequest", "11")\
+		"parameter[request].value.issuerInstrumentInfo.issuerInstrument.cardData.cardSelect.cardMagData.magData1"	:	\compareTo("srcRequest", "45")\
+		"parameter[request].value.issuerInstrumentInfo.issuerInstrument.cardData.cardSelect.cardMagData.magData2"	:	\compareTo("srcRequest", "35")\
+		"parameter[request].value.issuerInstrumentInfo.issuerInstrument.cardData.cardSelect.manualData.expirationDate" : \ensureAbsent()\
+		"parameter[request].value.messageReasonCode"	:	"1510"
+		"parameter[request].value.transactionIdent[]" : "(1)"
+		"parameter[request].value.transactionIdent[0]" : \compareTo("srcRequest", "127.58")\
+		
+		"parameter[request].value.issuerInstrumentInfo.issuerInstrument.cardData.cardVerificationData.cVResult"	:	"E_0" # card verification return no error
+	]
+]
+[send "RS" from IssuerDebitAddRqServer as MerchandisePurchase_Response
+	import IssuerDebitAddRq_MerchandisePurchase::MerchandisePurchase_Response
+	[
+		"type"		:	"RS"
+		"uid"		:	\copyFrom("MerchandisePurchase_Request", "uid")\
+		"service"	:	\copyFrom("MerchandisePurchase_Request", "service")\
+		"method"	:	\copyFrom("MerchandisePurchase_Request", "method")\
+		"outcome"	:	"01"
+
+		"response.type"		:	"com.aciworldwide.pim.messages.base24eps.transaction.services.IssuerDebitAddPurchaseRs_Type"
+		"response.value.requestUID"	:	\copyFrom("MerchandisePurchase_Request", "parameter[request].value.requestUID")\
+		
+		"response.value.status.messageStatusInfoVersion" : "2"				
+		
+		"response.value.statusChain[]"	:	"(0)"
+		
+		"response.value.issuerDebitAddRsInfo.issuerDebitAddRs.ACIContextRqHdr.clientDt" : \copyFrom("MerchandisePurchase_Request", "parameter[request].value.issuerDebitAddRqInfo.aCIContextRqHdr.clientDt")\
+		"response.value.issuerDebitAddRsInfo.issuerDebitAddRs.debitInfo.addressVerificationResultCode" : "U"
+		"response.value.issuerDebitAddRsInfo.issuerDebitAddRs.issuerInfo.authorizingAgentIdentCode" : \random("n", "11")\
+		"response.value.issuerDebitAddRsInfo.issuerDebitAddRs.issuerInfo.issuerInstitution.institutionIdent" : \random("n", "11")\
+		
+		"response.value.issuerDebitAddRsInfo.responseStatus.actionCode"	:	"000"
+		"response.value.issuerDebitAddRsInfo.responseStatus.approvalCode"	:	\random("an", "6")\
+		"response.value.issuerDebitAddRsInfo.responseStatus.referralPhoneNumber"	:	"512-555-" + \random("n", "4")\
+	]
+]
+[receive "0210" at ISOSource as src.rsp
+	import Iso8583post::IsoSrcResponse
+	[
+		"18" : \compareTo("srcRequest", "18")\
+		"32" : \compareTo("srcRequest", "32")\
+		"33" : \compareTo("srcRequest", "33")\
+		"38" : \compareTo("MerchandisePurchase_Response", "response.value.issuerDebitAddRsInfo.responseStatus.approvalCode")\
+		"44" : \compareTo("MerchandisePurchase_Response", "response.value.issuerDebitAddRsInfo.responseStatus.referralPhoneNumber")\
+		"45" : \compareTo("srcRequest", "45")\
+		"58" : \compareTo("MerchandisePurchase_Response", "response.value.issuerDebitAddRsInfo.issuerDebitAddRs.issuerInfo.authorizingAgentIdentCode")\
+		"100" :  \compareTo("srcRequest", "100")\
+		"127.12"	: \compareTo("srcRequest", "127.12")\
+		"127.13"	: \compareTo("srcRequest", "127.13")\
+		"127.15" : \compareTo("srcRequest", "127.15")\
+		"127.16" : \compareTo("MerchandisePurchase_Response", "response.value.issuerDebitAddRsInfo.issuerDebitAddRs.debitInfo.addressVerificationResultCode")\
+		"127.31" : \compareTo("MerchandisePurchase_Response", "response.value.issuerDebitAddRsInfo.issuerDebitAddRs.issuerInfo.issuerInstitution.institutionIdent")\
+		"127.58" : \compareTo("srcRequest", "127.58")\
+	]
+]

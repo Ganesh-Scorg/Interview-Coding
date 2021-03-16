@@ -1,0 +1,11 @@
+
+interface colour{}
+class ve{}
+class car extends ve implements colour{}
+
+public class kjg{
+	public static void main(String[] args) {
+		
+	}
+}
+

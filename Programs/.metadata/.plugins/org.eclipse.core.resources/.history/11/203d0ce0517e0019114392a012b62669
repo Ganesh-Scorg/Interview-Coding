@@ -1,0 +1,36 @@
+
+public class DB {
+
+	public static void main(String [] args) {
+		// TODO Auto-generated method stub
+		int i,sum;
+		sum=10;
+		
+		for (i = 0; i < 100; i++) {
+			abc ii = new abc();
+			System.out.println(ii.Nim());
+
+		}
+		
+		
+		System.out.println(i);
+	
+
+	}
+
+}
+
+class abc{
+	private static long num=0;
+	
+	public abc()
+	{
+		num++;
+	}
+	public static long Nim()
+	{
+		return num;
+	}
+	
+	
+}

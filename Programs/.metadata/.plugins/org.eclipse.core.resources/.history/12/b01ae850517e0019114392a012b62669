@@ -1,0 +1,29 @@
+
+public class DB {
+
+	private void main() {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < 100; i++) {
+			abc ii = new abc();
+			System.out.println(ii.Nim());
+
+		}
+
+	}
+
+}
+
+class abc{
+	private static long num=0;
+	
+	public abc()
+	{
+		num++;
+	}
+	public static long Nim()
+	{
+		return num;
+	}
+	
+	
+}

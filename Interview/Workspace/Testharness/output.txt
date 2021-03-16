@@ -1,0 +1,32 @@
+#
+
+
+]
+[
+"parameter[request].value.issuerDebitAddRqInfo.debitInfo.compositeCurAmt[0].aCICompositeCurAmtVersion"
+
+]
+]
+import IssuerDebitAddRq_MerchandisePurchase
+[
+"uid"
+
+
+
+
+
+]
+]
+import Iso8583post
+[
+"18"
+"32"
+"33"
+"45"
+"100"
+"127.12"
+"127.13"
+"127.15"
+"127.58"
+]
+]
